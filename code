@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>Chat Application</title>
+</head>
+<body>
+	<h1>Chat Application</h1>
+	<div id="chat-window">
+	</div>
+	<form>
+		<input type="text" id="message-box">
+		<button type="submit" id="send-button">Send</button>
+	</form>
+
+	<script>
+		// initialize WebSocket
+		const socket = new WebSocket('ws://localhost:3000');
+
+		// create a function to display messages
+		function displayMessage(message) {
+			const div = document.createElement('div');
+			div.innerText = message;
+			document.getElementById('chat-window').appendChild(div);
+		}
+
+		// when the WebSocket connection is open, set up event listeners for form submission
+		socket.addEventListener('open', (event) => {
+			document.querySelector('form').addEventListener('submit', (event) => {
+				event.preventDefault();
+				const messageBox = document.getElementById('message-box');
+				const message = messageBox.value;
+				socket.send(message);
+				messageBox.value = '';
+			});
+		});
+
+		// when the WebSocket receives a message, display it
+		socket.addEventListener('message', (event) => {
+			displayMessage(event.data);
+		});
+	</script>
+</body>
+</html>
